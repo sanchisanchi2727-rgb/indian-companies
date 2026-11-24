@@ -43,9 +43,19 @@ class ChromaStore:
         print(f"Stored {len(chunks)} chunks in ChromaDB")
 
     def search(self, query_embedding, top_k=3):
+        count = self.collection.count()
+
+        # Handle an empty database safely
+        if count == 0 or top_k <= 0:
+            return {
+                "documents": [[]],
+                "metadatas": [[]],
+                "distances": [[]]
+            }
+
         results = self.collection.query(
             query_embeddings=[query_embedding.tolist()],
-            n_results=min(top_k, self.collection.count()),
+            n_results=min(top_k, count),
             include=["documents", "metadatas", "distances"]
         )
 

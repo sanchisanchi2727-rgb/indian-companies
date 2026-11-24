@@ -2,22 +2,45 @@
 from app.vectorstore.chroma_store import ChromaStore
 
 
-def test_company_data_is_indexed():
+def test_company_data_is_indexed(tmp_path):
 
-    # Connect to the existing Indian Companies database
+    # Create a separate temporary ChromaDB for testing
     store = ChromaStore(
-        persist_directory="chroma_db",
-        collection_name="indian_companies"
+        persist_directory=str(tmp_path / "chroma_test"),
+        collection_name="test_companies"
     )
 
-    # Get the total number of indexed documents
+    # Add sample company data
+    chunks = [
+        "Infosys provides IT consulting and digital services.",
+        "TCS provides technology and business consulting services."
+    ]
+
+    metadatas = [
+        {"company": "Infosys", "source": "test"},
+        {"company": "TCS", "source": "test"}
+    ]
+
+    ids = ["test_infosys", "test_tcs"]
+
+    # Use simple test embeddings
+    import numpy as np
+
+    embeddings = np.array([
+        [0.1, 0.2, 0.3],
+        [0.4, 0.5, 0.6]
+    ])
+
+    store.add_documents(
+        chunks=chunks,
+        embeddings=embeddings,
+        metadatas=metadatas,
+        ids=ids
+    )
+
+    # Verify indexed documents
     count = store.count_documents()
 
-    # Verify that company data exists
-    assert count > 0, (
-        "No company data found in ChromaDB. "
-        "Please run the indexing process first."
-    )
-
-    # Verify the document count
+    assert count == 2
     assert isinstance(count, int)
+

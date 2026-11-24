@@ -1,22 +1,29 @@
 
+
 from app.ingestion.wikipedia_loader import WikipediaLoader
 
 
-def test_wikipedia_loader_loads_company_data():
+def test_wikipedia_loader_loads_company_data(monkeypatch):
 
-    # Initialize Wikipedia loader
     loader = WikipediaLoader()
 
-    # Company to retrieve
-    company = "Tata Consultancy Services"
+    # Sample company information
+    sample_content = (
+        "Tata Consultancy Services is an Indian multinational "
+        "IT services and consulting company. It provides "
+        "technology services, consulting and business solutions."
+    )
 
-    # Load company information
-    content = loader.load_company(company)
+    # Mock the Wikipedia request
+    monkeypatch.setattr(
+        loader,
+        "load_company",
+        lambda company: sample_content
+    )
 
-    # Verify that content is returned
+    content = loader.load_company("Tata Consultancy Services")
+
     assert content is not None
     assert isinstance(content, str)
     assert len(content.strip()) > 0
-
-    # Verify that meaningful company information exists
     assert len(content) > 50

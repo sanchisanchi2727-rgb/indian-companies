@@ -11,3 +11,13 @@ logs/
 .pytest_cache/
 .mypy_cache/
 .vscode/
+# Backup files
+*_backup.py
+*_backup_*.py
+
+# Generated test and temporary data
+data/
+scripts/data/
+
+# Temporary files
+*.log
